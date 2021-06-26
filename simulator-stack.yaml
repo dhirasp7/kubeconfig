@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simulator
+spec:
+  minReadySeconds: 20
+  selector:
+    matchLabels:
+      app-label: simulator
+  replicas: 1
+  template: 
+    metadata: 
+      labels: #labels are custom defined key value pairs used by 'Selector' in the service yaml files
+        app-label: simulator
+    spec:
+      containers:
+        - name: simulator-container
+          image: dhirasp7/simulator
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: simulator-service
+
+spec:
+  #Pods represented by this service
+  #becoame network enpoint for other services and other users
+  selector:
+    app-label: simulator
+
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080  
+      nodePort: 30080  #kubernets allow port > 30000
+
+
+  type: NodePort 
+  #ClusterIP  #ClusterIP makes the service private to the ClusterIP
+  #NodePort exposing a port to outside of cluster
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tempdatareceiver
+spec:
+  minReadySeconds: 10
+  selector:
+    matchLabels:
+      app-label: tempdatareceiver
+  replicas: 1
+  template: 
+    metadata: 
+      labels: #labels are custom defined key value pairs used by 'Selector' in the service yaml files
+        app-label: tempdatareceiver
+    spec:
+      containers:
+        - name: tempdatareceiver-container
+          image: dhirasp7/datareceiver
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tempdatareceiver-service
+
+spec:
+  #Pods represented by this service
+  #becoame network enpoint for other services and other users
+  selector:
+    app-label: tempdatareceiver
+
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080  
+      nodePort: 30090  #kubernets allow port > 30000
+
+
+  type: NodePort 
+  #ClusterIP  #ClusterIP makes the service private to the ClusterIP
+  #NodePort exposing a port to outside of cluster
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: presdatareceiver
+spec:
+  minReadySeconds: 10
+  selector:
+    matchLabels:
+      app-label: presdatareceiver
+  replicas: 1
+  template: 
+    metadata: 
+      labels: #labels are custom defined key value pairs used by 'Selector' in the service yaml files
+        app-label: presdatareceiver
+    spec:
+      containers:
+        - name: presdatareceiver-container
+          image: dhirasp7/presdatareceiver
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: presdatareceiver-service
+
+spec:
+  #Pods represented by this service
+  #becoame network enpoint for other services and other users
+  selector:
+    app-label: presdatareceiver
+
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080  
+      nodePort: 30099  #kubernets allow port > 30000
+
+
+  type: NodePort 
+  #ClusterIP  #ClusterIP makes the service private to the ClusterIP
+  #NodePort exposing a port to outside of cluster
+
