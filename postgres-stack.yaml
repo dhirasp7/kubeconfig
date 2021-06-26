@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgrestempdb  #name of the pod
+spec:
+  selector:
+    matchLabels:
+      app: postgrestempdb
+  replicas: 1
+  template: # template for the pods
+    metadata:
+      labels:
+        app: postgrestempdb
+    spec:
+      containers:
+      - name: postgrestempdb
+        image: dhirasp7/post_sensordb:v1.0
+        env:
+           - name: POSTGRES_DB
+             value: "sensordb"
+           - name: POSTGRES_USER
+             value: "postgres"
+           - name: POSTGRES_PASSWORD
+             value: "docker"
+        volumeMounts:
+          - name: postgres-temp-persistent-storage
+            mountPath: '/var/lib/postgresql/data'
+      volumes:
+        - name: postgres-temp-persistent-storage
+          # pointer to the configuration of HOW we want the mount to be implemented
+          persistentVolumeClaim:
+            claimName: postgres-temp-pvc   
+          # pointer to the configuration of HOW we want the mount to be implemented
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: postgrestempdb #becomes the dns name
+spec:
+  selector:
+    app: postgrestempdb #should map to matchLabel for the pod
+  ports:
+    - name: postgresport
+      port: 5432
+  type: ClusterIP

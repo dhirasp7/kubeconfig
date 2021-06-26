@@ -1,0 +1,27 @@
+# What do want?
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-temp-pvc
+spec:
+  storageClassName: postgreslocalstorage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi
+---
+# How do we want it implemented
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-temp-storage
+spec:
+  storageClassName: postgreslocalstorage
+  capacity:
+    storage: 4Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/k8s/postgrestempdb/data/"
+    type: DirectoryOrCreate
